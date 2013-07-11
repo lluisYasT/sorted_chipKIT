@@ -3,6 +3,7 @@ TOOLCHAIN_PREFIX=$(MPIDE)/hardware/pic32/compiler/pic32-tools
 CC=$(TOOLCHAIN_PREFIX)/bin/pic32-gcc
 CXX=$(TOOLCHAIN_PREFIX)/bin/pic32-g++
 AR=$(TOOLCHAIN_PREFIX)/bin/pic32-ar
+RANLIB=$(TOOLCHAIN_PREFIX)/bin/pic32-ranlib
 
 CPUTYPE=32MX795F512L
 VARIANT=Max32
@@ -34,6 +35,7 @@ all: core.a
 
 core.a: $(OBJ_S) $(OBJ_C) $(OBJ_CPP)
 	$(AR) rcs core.a *.o
+	$(RANLIB) core.a
 
 .PHONY: clean
 clean:
