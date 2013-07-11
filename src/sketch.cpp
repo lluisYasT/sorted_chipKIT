@@ -82,7 +82,7 @@ void loop()
 			for (int i = 0; i < message_size; ++i)
 			{
 				//message[i] = client.read();
-				if(message[i] == ' ' || message[i] == '\n' || message[i] == '\r')
+				if(message[i] == ' ')
 				{
 					if(cantidad_num == 0)
 					{
@@ -332,18 +332,18 @@ void ejecuta_comando(Client *client, comandos comando, int size)
 
 		case HELP:
 			(*client).println("Comandos disponibles:\n");
-			(*client).println("bubble0")
-			(*client).println("bubble1")
-			(*client).println("bubble2")
-			(*client).println("bubble3")
-			(*client).println("quick0")
-			(*client).println("quick1")
-			(*client).println("quick2")
-			(*client).println("quick3")
-			(*client).println("sel0")
-			(*client).println("sel1")
-			(*client).println("sel2")
-			(*client).println("sel3")
+			(*client).println("bubble0");
+			(*client).println("bubble1");
+			(*client).println("bubble2");
+			(*client).println("bubble3");
+			(*client).println("quick0");
+			(*client).println("quick1");
+			(*client).println("quick2");
+			(*client).println("quick3");
+			(*client).println("sel0");
+			(*client).println("sel1");
+			(*client).println("sel2");
+			(*client).println("sel3");
 			break;
 
 		default:
