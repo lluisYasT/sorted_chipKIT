@@ -51,10 +51,10 @@ void setup()
 	Serial.begin(9600);
 }
 
-uint8_t message[1000];
+uint8_t message[4096];
 char comando[16];
-int number_array[512];
-int resultado[512];
+int number_array[2048];
+int resultado[2048];
 
 
 void loop() 
@@ -74,15 +74,33 @@ void loop()
 		number_array = {NULL};
 
 		message_size = client.available();
-		Serial.print("Message size: ");
-		Serial.println(message_size);
-		if(message_size > 16)
+		if(message_size)
 		{
-			message_size = client.read(message, 1000);
+			//message_size = client.read(message, 1000);
+			int m = 0;
+			char c; 
+			while((c = client.read()) != '\n'){
+				if(c != -1) {
+					message[m] = c;
+					if(m < 4096 - 1) {
+						m++;
+					} else {
+						break;
+					}
+				}
+			}
+
+			Serial.println((char *) message);
+
+			//message_size = strlen((char *) message);
+			message_size = m + 1;
+			Serial.print("Message size: ");
+			Serial.println(message_size);
+
 			for (int i = 0; i < message_size; ++i)
 			{
 				//message[i] = client.read();
-				if(message[i] == ' ')
+				if(message[i] == ' ' || message[i] == '\r' || message[i] == '\n')
 				{
 					if(cantidad_num == 0)
 					{
@@ -308,7 +326,7 @@ void ejecuta_comando(Client *client, comandos comando, int size)
 			selection1(resultado, size);
 			despues = micros();
 
-			(*client).print("Tiempo Selection0: ");
+			(*client).print("Tiempo Selection1: ");
 			(*client).println(despues - antes);
 			break;
 
@@ -317,7 +335,7 @@ void ejecuta_comando(Client *client, comandos comando, int size)
 			selection2(resultado, size);
 			despues = micros();
 
-			(*client).print("Tiempo Selection0: ");
+			(*client).print("Tiempo Selection2: ");
 			(*client).println(despues - antes);
 			break;
 
@@ -326,7 +344,7 @@ void ejecuta_comando(Client *client, comandos comando, int size)
 			selection3(resultado, size);
 			despues = micros();
 
-			(*client).print("Tiempo Selection0: ");
+			(*client).print("Tiempo Selection3: ");
 			(*client).println(despues - antes);
 			break;
 
