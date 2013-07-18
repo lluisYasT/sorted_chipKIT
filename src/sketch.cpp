@@ -23,6 +23,7 @@ boolean gotAMessage = false; // whether or not you got a message from the client
 typedef enum comandos {
 	NOP,
 	HELP,
+	EXIT,
 	BUBBLE0,
 	BUBBLE1,
 	BUBBLE2,
@@ -81,7 +82,8 @@ void loop()
 			//message_size = client.read(message, 1000);
 			int m = 0;
 			char c; 
-			while((c = client.read()) != '\n'){
+			do {
+				c = client.read();
 				if(c != -1) {
 					message[m] = c;
 					if(m < MESSAGE_SIZE - 1) {
@@ -93,17 +95,19 @@ void loop()
 						break;
 					}
 				}
-			}
+			} while(c != '\n');
 			
 
 			//Serial.println((char *) message);
 
 			//message_size = strlen((char *) message);
-			if (m > 0 && m < MESSAGE_SIZE - 1)
+			/*if (m > 0 && m < MESSAGE_SIZE - 1)
 			{
 				message[m] = '\n';
 				message_size = m + 1;
 			}
+			*/
+			message_size = m;
 			Serial.print("Message size: ");
 			Serial.println(message_size);
 
@@ -240,6 +244,9 @@ comandos deco_comando(void)
 	} else if (!strcmp(comando, "help"))
 	{
 		return HELP;
+	} else if (!strcmp(comando, "exit"))
+	{
+		return EXIT;
 	} else {
 		return NOP;
 	}
@@ -421,10 +428,16 @@ void ejecuta_comando(Client *client, comandos comando, int size)
 			(*client).println("sel1");
 			(*client).println("sel2");
 			(*client).println("sel3");
+			(*client).println("");
+			break;
+
+		case EXIT:
+			(*client).stop();
 			break;
 
 		default:
 			(*client).println("Comando invalido");
+			Serial.println("Cliente desconectado");
 			break;
 
 	}
