@@ -67,12 +67,11 @@ void loop()
 	int cantidad_num = 0;
 	int n = 0;
 	int size = 0;
-	int data_ini = 0;
 	comandos num_comando = NOP;
 
 	if (client) {
 		message = {0};
-		comando = {0};
+		comando = {0};hel
 		number_array = {NULL};
 
 		message_size = client.available();
@@ -100,9 +99,11 @@ void loop()
 			Serial.print("Message size: ");
 			Serial.println(message_size);
 
+			char numero[16] = {0};
+			int j = 0;
+			
 			for (int i = 0; i < message_size; ++i)
 			{
-				//message[i] = client.read();
 				if(message[i] == ' ' || message[i] == ',' || message[i] == '\t' || message[i] == '\r' || message[i] == '\n')
 				{
 					if(cantidad_num == 0)
@@ -113,50 +114,39 @@ void loop()
 							break;
 						}
 						memcpy(comando, message, i);
-						if((num_comando = deco_comando()) != NOP)
-						{
-							data_ini = i + 1;
-						}
-					}
-					cantidad_num++;
-				}
-			}
-
-			Serial.println(comando);
-
-			if(cantidad_num > 0) //Tenemos datos
-			{ 
-				char numero[16] = {0};
-				int j = 0;
-				n = 0;
-				for(int i = data_ini; i < message_size; ++i)
-				{
-					if(message[i] != ' ' && message[i] != '\n')
-					{
-						numero[j] = message[i];
-						j++;
+						num_comando = deco_comando();
 					} else {
-						//number_array[n] = atoi(numero);
 						if(sscanf(numero, "%d", &number_array[n]) < 1)
 						{
 							Serial.println("Error al convertir");
-						Serial.print("Num: ");
+							Serial.print("Num: ");
 							Serial.println(numero);
 							size = 0;
 							number_array = {NULL};
 							break;
 						} else
 						{
-						 n++;
-						 j = 0;
-						 numero = {0};
+							n++;
+							j = 0;
+							numero = {0};
 						}
 					}
+					cantidad_num++;
+				} else{
+					if(cantidad_num > 0){
+						numero[j] = message[i];
+						j++;
+					}
 				}
+			}
+
+			if(cantidad_num > 0){
 				size = n;
 				Serial.print("Tamaño del array: ");
 				Serial.println(size);
 			}
+
+			Serial.println(comando);
 		}
 		
 		client.flush();
