@@ -71,7 +71,7 @@ void loop()
 
 	if (client) {
 		message = {0};
-		comando = {0};hel
+		comando = {0};
 		number_array = {NULL};
 
 		message_size = client.available();
@@ -104,7 +104,11 @@ void loop()
 			
 			for (int i = 0; i < message_size; ++i)
 			{
-				if(message[i] == ' ' || message[i] == ',' || message[i] == '\t' || message[i] == '\r' || message[i] == '\n')
+				if(message[i] == ' ' 
+					|| message[i] == ',' 
+					|| message[i] == '\t' 
+					|| message[i] == '\r' 
+					|| message[i] == '\n')
 				{
 					if(cantidad_num == 0)
 					{
