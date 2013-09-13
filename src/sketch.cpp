@@ -1,90 +1,90 @@
 #include <chipKITEthernet.h>
 #include "funciones.h"
 
-#define MESSAGE_SIZE 	8192
-#define ARRAY_SIZE		MESSAGE_SIZE / 2
-// Enter a MAC address and IP address for your controller below. 
-// A zero MAC address means that the chipKIT MAC is to be used
-byte mac[] = {	
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+#define LONG_MENSAJE 	8192
+#define ARRAY_SIZE		LONG_MENSAJE / 2
+	// Enter a MAC address and IP address for your controller below. 
+	// A zero MAC address means that the chipKIT MAC is to be used
+	byte mac[] = {	
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-//			 !!MODIFY THIS!!
-// The IP address will be dependent on your local network:
-byte ip[] = { 
-	10,0,0,8 };
+	//			 !!MODIFY THIS!!
+	// The IP address will be dependent on your local network:
+	byte ip[] = { 
+		10,0,0,8 };
 
-byte gateway[] = { 10,0,0,1 };
-byte subnet[] = { 255, 255, 255, 0 };
+	byte gateway[] = { 10,0,0,1 };
+	byte subnet[] = { 255, 255, 255, 0 };
 
-// telnet defaults to port 23
-Server server(23);
+	// telnet defaults to port 23
+	Server server(23);
 
-typedef enum comandos {
-	NOP,
-	HELP,
-	EXIT,
-	BUBBLE0,
-	BUBBLE1,
-	BUBBLE2,
-	BUBBLE3,
-	QUICK0,
-	QUICK1,
-	QUICK2,
-	QUICK3,
-	SEL0,
-	SEL1,
-	SEL2,
-	SEL3,
-} comandos;
+	typedef enum comandos {
+		NOP,
+		HELP,
+		EXIT,
+		BUBBLE0,
+		BUBBLE1,
+		BUBBLE2,
+		BUBBLE3,
+		QUICK0,
+		QUICK1,
+		QUICK2,
+		QUICK3,
+		SEL0,
+		SEL1,
+		SEL2,
+		SEL3,
+	} comandos;
 
-void print_array(int *array, int len);
-int copia_a_resultado(int size);
-comandos deco_comando(void);
-void ejecuta_comando(Client *client, comandos, int);
+	void print_array(int *array, int len);
+	int copia_a_resultado(int size);
+	comandos deco_comando(void);
+	void ejecuta_comando(Client *client, comandos, int);
 
-void setup() 
-{
-	// initialize the ethernet device
-	//	Ethernet.begin(mac, ip, gateway, subnet);
-	Ethernet.begin(mac,ip);
-	// start listening for clients
-	server.begin();
-	// open the serial port
-	Serial.begin(9600);
-}
+	void setup() 
+	{
+		// initialize the ethernet device
+		//	Ethernet.begin(mac, ip, gateway, subnet);
+		Ethernet.begin(mac,ip);
+		// start listening for clients
+		server.begin();
+		// open the serial port
+		Serial.begin(9600);
+	}
 
-uint8_t message[MESSAGE_SIZE];
-char comando[16];
-int number_array[ARRAY_SIZE];
-int resultado[ARRAY_SIZE];
+	uint8_t message[LONG_MENSAJE];
+	char comando[16];
+	int number_array[ARRAY_SIZE];
+	int resultado[ARRAY_SIZE];
 
 
-void loop() 
-{
-	// wait for a new client:
-	Client client = server.available();
-	uint message_size = 0;
-	int cantidad_num = 0;
-	int n = 0;
-	int size = 0;
-	comandos num_comando = NOP;
+	void loop() 
+	{
+		// wait for a new client:
+		Client client = server.available();
+		uint message_size = 0;
+		int cantidad_num = 0;
+		int n = 0;
+		int size = 0;
+		comandos num_comando = NOP;
 
-	if (client) {
-		message = {0};
-		comando = {0};
-		number_array = {NULL};
+		if (client) {
+			message = {0};
+			comando = {0};
+			number_array = {NULL};
 
-		message_size = client.available();
-		if(message_size)
-		{
-			//message_size = client.read(message, 1000);
-			int m = 0;
-			char c; 
-			do {
-				c = client.read();
-				if(c != -1) {
-					message[m] = c;
-					if(m < MESSAGE_SIZE - 1) {
+			message_size = client.available();
+			if(message_size)
+			{
+				//message_size = client.read(message, 1000);
+				int m = 0;
+				char c; 
+				do {
+					c = client.read();
+					if(c != -1) {
+						message[m] = c;
+						if(m < LONG_MENSAJE - 1) {
 						m++;
 					} else {
 						client.println("Array demasiado largo");
