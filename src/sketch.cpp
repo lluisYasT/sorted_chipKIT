@@ -76,28 +76,28 @@ void loop()
 		comando = {0};
 		number_array = {NULL};
 
-		long_mensaje = cliente.available();
-		if(long_mensaje)
+		if(client.available())
 		{
-			//long_mensaje = cliente.read(message, 1000);
-			int m = 0;
 			char c; 
-			do {
+			do
+			{
 				c = cliente.read();
-				if(c != -1) {
-					message[m] = c;
-					if(m < MAX_LONG_MENSAJE - 1) {
-						m++;
-					} else {
+				if(c != -1)
+				{
+					message[long_mensaje] = c;
+					if(long_mensaje < MAX_LONG_MENSAJE - 1)
+					{
+						long_mensaje++;
+					} else
+					{
 						cliente.println("Array demasiado largo");
 						message = {0};
-						m = 0;
+						long_mensaje = 0;
 						break;
 					}
 				}
 			} while(c != '\n');
 		
-			long_mensaje = m;
 			Serial.print("Longitud del mensaje: ");
 			Serial.println(long_mensaje);
 
