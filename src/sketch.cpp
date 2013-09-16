@@ -1,90 +1,92 @@
 #include <chipKITEthernet.h>
 #include "funciones.h"
 
-#define LONG_MENSAJE 	8192
-#define ARRAY_SIZE		LONG_MENSAJE / 2
-	// Enter a MAC address and IP address for your controller below. 
-	// A zero MAC address means that the chipKIT MAC is to be used
-	byte mac[] = {	
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+#define MAX_LONG_MENSAJE 	8192
+#define MAX_LONG_ARRAY		MAX_LONG_MENSAJE / 2
 
-	//			 !!MODIFY THIS!!
-	// The IP address will be dependent on your local network:
-	byte ip[] = { 
-		10,0,0,8 };
+uint8_t message[MAX_LONG_MENSAJE];
+char comando[16];
+int number_array[MAX_LONG_ARRAY];
+int resultado[MAX_LONG_ARRAY];
 
-	byte gateway[] = { 10,0,0,1 };
-	byte subnet[] = { 255, 255, 255, 0 };
+// Enter a MAC address and IP address for your controller below. 
+// A zero MAC address means that the chipKIT MAC is to be used
+byte mac[] = {	
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-	// telnet defaults to port 23
-	Server server(23);
+//			 !!MODIFY THIS!!
+// The IP address will be dependent on your local network:
+byte ip[] = { 
+	10,0,0,8 };
 
-	typedef enum comandos {
-		NOP,
-		HELP,
-		EXIT,
-		BUBBLE0,
-		BUBBLE1,
-		BUBBLE2,
-		BUBBLE3,
-		QUICK0,
-		QUICK1,
-		QUICK2,
-		QUICK3,
-		SEL0,
-		SEL1,
-		SEL2,
-		SEL3,
-	} comandos;
+byte router[] = { 10,0,0,1 };
+byte subred[] = { 255, 255, 255, 0 };
 
-	void print_array(int *array, int len);
-	int copia_a_resultado(int size);
-	comandos deco_comando(void);
-	void ejecuta_comando(Client *client, comandos, int);
+// telnet defaults to port 23
+Server server(23);
 
-	void setup() 
+typedef enum comandos {
+	NOP,
+	HELP,
+	EXIT,
+	BUBBLE0,
+	BUBBLE1,
+	BUBBLE2,
+	BUBBLE3,
+	QUICK0,
+	QUICK1,
+	QUICK2,
+	QUICK3,
+	SEL0,
+	SEL1,
+	SEL2,
+	SEL3,
+} comandos;
+
+void print_array(int *array, int len);
+int copia_a_resultado(int size);
+comandos deco_comando(void);
+void ejecuta_comando(Client *client, comandos, int);
+
+void setup() 
+{
+	// initialize the ethernet device
+	//	Ethernet.begin(mac, ip, router, subred);
+	Ethernet.begin(mac,ip);
+	// start listening for clients
+	server.begin();
+	// open the serial port
+	Serial.begin(9600);
+}
+
+
+
+void loop() 
+{
+	Client client = server.available();
+	uint message_size = 0;
+	int cantidad_num = 0;
+	int n = 0;
+	int size = 0;
+	comandos num_comando = NOP;
+
+	if (client)
 	{
-		// initialize the ethernet device
-		//	Ethernet.begin(mac, ip, gateway, subnet);
-		Ethernet.begin(mac,ip);
-		// start listening for clients
-		server.begin();
-		// open the serial port
-		Serial.begin(9600);
-	}
+		message = {0};
+		comando = {0};
+		number_array = {NULL};
 
-	uint8_t message[LONG_MENSAJE];
-	char comando[16];
-	int number_array[ARRAY_SIZE];
-	int resultado[ARRAY_SIZE];
-
-
-	void loop() 
-	{
-		// wait for a new client:
-		Client client = server.available();
-		uint message_size = 0;
-		int cantidad_num = 0;
-		int n = 0;
-		int size = 0;
-		comandos num_comando = NOP;
-
-		if (client) {
-			message = {0};
-			comando = {0};
-			number_array = {NULL};
-
-			message_size = client.available();
-			if(message_size)
-			{
-				//message_size = client.read(message, 1000);
-				int m = 0;
-				char c; 
-				do {
-					c = client.read();
-					if(c != -1) {
-						message[m] = c;
-						if(m < LONG_MENSAJE - 1) {
+		message_size = client.available();
+		if(message_size)
+		{
+			//message_size = client.read(message, 1000);
+			int m = 0;
+			char c; 
+			do {
+				c = client.read();
+				if(c != -1) {
+					message[m] = c;
+					if(m < MAX_LONG_MENSAJE - 1) {
 						m++;
 					} else {
 						client.println("Array demasiado largo");
@@ -94,14 +96,14 @@
 					}
 				}
 			} while(c != '\n');
-			
+		
 			message_size = m;
 			Serial.print("Message size: ");
 			Serial.println(message_size);
 
 			char numero[16] = {0};
 			int j = 0;
-			
+		
 			for (int i = 0; i < message_size; ++i)
 			{
 				if(message[i] == ' ' 
@@ -112,14 +114,16 @@
 				{
 					if(cantidad_num == 0)
 					{
-						if(i>16){
+						if(i>16)
+						{
 							num_comando = NOP;
 							cantidad_num = 0;
 							break;
 						}
 						memcpy(comando, message, i);
 						num_comando = deco_comando();
-					} else {
+					} else
+					{
 						if(sscanf(numero, "%d", &number_array[n]) < 1)
 						{
 							Serial.println("Error al convertir");
@@ -136,8 +140,10 @@
 						}
 					}
 					cantidad_num++;
-				} else{
-					if(cantidad_num > 0){
+				} else
+				{
+					if(cantidad_num > 0)
+					{
 						numero[j] = message[i];
 						j++;
 					}
@@ -152,7 +158,7 @@
 
 			Serial.println(comando);
 		}
-		
+	
 		client.flush();
 
 		ejecuta_comando(&client, num_comando, size);
