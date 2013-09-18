@@ -4,9 +4,9 @@
 #define MAX_LONG_MENSAJE 	8192
 #define MAX_LONG_ARRAY		MAX_LONG_MENSAJE / 2
 
-uint8_t message[MAX_LONG_MENSAJE];
+uint8_t mensaje[MAX_LONG_MENSAJE];
 char comando[16];
-int number_array[MAX_LONG_ARRAY];
+int array_numeros[MAX_LONG_ARRAY];
 int resultado[MAX_LONG_ARRAY];
 
 // Enter a MAC address and IP address for your controller below. 
@@ -19,10 +19,15 @@ byte mac[] = {
 byte ip[] = { 
 	10,0,0,8 };
 
+//Estos campos estan comentados ya que no necesitamos acceso
+//fuera de la red local. En caso de necesitarlo (para acceder
+//desde una red externa) se pueden descomentar y cambiar la 
+//linea Ethernet.begin dentro de la funcion setup por la que 
+//esta comentada.
 //byte router[] = { 10,0,0,1 };
 //byte subred[] = { 255, 255, 255, 0 };
 
-// telnet defaults to port 23
+// Iniciamos el servidor en el puerto 23 (Telnet)
 Server server(23);
 
 typedef enum comandos {
@@ -72,11 +77,11 @@ void loop()
 
 	if (cliente)
 	{
-		message = {0};
+		mensaje = {0};
 		comando = {0};
-		number_array = {NULL};
+		array_numeros = {NULL};
 
-		if(client.available())
+		if(cliente.available())
 		{
 			char c; 
 			do
@@ -84,14 +89,14 @@ void loop()
 				c = cliente.read();
 				if(c != -1)
 				{
-					message[long_mensaje] = c;
+					mensaje[long_mensaje] = c;
 					if(long_mensaje < MAX_LONG_MENSAJE - 1)
 					{
 						long_mensaje++;
 					} else
 					{
 						cliente.println("Array demasiado largo");
-						message = {0};
+						mensaje = {0};
 						long_mensaje = 0;
 						break;
 					}
@@ -106,11 +111,11 @@ void loop()
 		
 			for (int i = 0; i < long_mensaje; ++i)
 			{
-				if(message[i] == ' ' 
-					|| message[i] == ',' 
-					|| message[i] == '\t' 
-					|| message[i] == '\r' 
-					|| message[i] == '\n')
+				if(mensaje[i] == ' ' 
+					|| mensaje[i] == ',' 
+					|| mensaje[i] == '\t' 
+					|| mensaje[i] == '\r' 
+					|| mensaje[i] == '\n')
 				{
 					if(cantidad_num == 0)
 					{
@@ -120,17 +125,17 @@ void loop()
 							cantidad_num = 0;
 							break;
 						}
-						memcpy(comando, message, i);
+						memcpy(comando, mensaje, i);
 						num_comando = deco_comando();
 					} else
 					{
-						if(sscanf(numero, "%d", &number_array[n]) < 1)
+						if(sscanf(numero, "%d", &array_numeros[n]) < 1)
 						{
 							Serial.println("Error al convertir");
 							Serial.print("Num: ");
 							Serial.println(numero);
 							size = 0;
-							number_array = {NULL};
+							array_numeros = {NULL};
 							break;
 						} else
 						{
@@ -144,13 +149,14 @@ void loop()
 				{
 					if(cantidad_num > 0)
 					{
-						numero[j] = message[i];
+						numero[j] = mensaje[i];
 						j++;
 					}
 				}
 			}
 
-			if(cantidad_num > 0){
+			if(cantidad_num > 0)
+			{
 				size = n;
 				Serial.print("Tamaño del array: ");
 				Serial.println(size);
@@ -187,7 +193,7 @@ int copia_a_resultado(int size)
 	
 	for (int i = 0; i < size; ++i)
 	{
-		resultado[i] = number_array[i];
+		resultado[i] = array_numeros[i];
 	}
 	return 0;
 }
