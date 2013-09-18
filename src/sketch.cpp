@@ -1,8 +1,13 @@
 #include <chipKITEthernet.h>
 #include "funciones.h"
 
-#define MESSAGE_SIZE 	8192
-#define ARRAY_SIZE		MESSAGE_SIZE / 2
+#define MAX_LONG_MENSAJE 	8192
+#define MAX_LONG_ARRAY		MAX_LONG_MENSAJE / 2
+
+uint8_t mensaje[MAX_LONG_MENSAJE];
+char comando[16];
+int array_numeros[MAX_LONG_ARRAY];
+
 // Enter a MAC address and IP address for your controller below. 
 // A zero MAC address means that the chipKIT MAC is to be used
 byte mac[] = {	
@@ -13,10 +18,15 @@ byte mac[] = {
 byte ip[] = { 
 	10,0,0,8 };
 
-byte gateway[] = { 10,0,0,1 };
-byte subnet[] = { 255, 255, 255, 0 };
+//Estos campos estan comentados ya que no necesitamos acceso
+//fuera de la red local. En caso de necesitarlo (para acceder
+//desde una red externa) se pueden descomentar y cambiar la 
+//linea Ethernet.begin dentro de la funcion setup por la que 
+//esta comentada.
+//byte router[] = { 10,0,0,1 };
+//byte subred[] = { 255, 255, 255, 0 };
 
-// telnet defaults to port 23
+// Iniciamos el servidor en el puerto 23 (Telnet)
 Server server(23);
 
 typedef enum comandos {
@@ -38,95 +48,92 @@ typedef enum comandos {
 } comandos;
 
 void print_array(int *array, int len);
-int copia_a_resultado(int size);
 comandos deco_comando(void);
-void ejecuta_comando(Client *client, comandos, int);
+void ejecuta_comando(Client *cliente, comandos, int);
 
 void setup() 
 {
-	// initialize the ethernet device
-	//	Ethernet.begin(mac, ip, gateway, subnet);
+	// Inicializamos el dispositivo de red.
+	//	Ethernet.begin(mac, ip, router, subred);
 	Ethernet.begin(mac,ip);
-	// start listening for clients
+	// Inicializamos el servidor
 	server.begin();
-	// open the serial port
+	// Abrimos el puerto serie
 	Serial.begin(9600);
 }
 
-uint8_t message[MESSAGE_SIZE];
-char comando[16];
-int number_array[ARRAY_SIZE];
-int resultado[ARRAY_SIZE];
 
 
 void loop() 
 {
-	// wait for a new client:
-	Client client = server.available();
-	uint message_size = 0;
+	Client cliente = server.available();
+	uint long_mensaje = 0;
 	int cantidad_num = 0;
 	int n = 0;
 	int size = 0;
 	comandos num_comando = NOP;
 
-	if (client) {
-		message = {0};
+	if (cliente)
+	{
+		mensaje = {0};
 		comando = {0};
-		number_array = {NULL};
+		array_numeros = {NULL};
 
-		message_size = client.available();
-		if(message_size)
+		if(cliente.available())
 		{
-			//message_size = client.read(message, 1000);
-			int m = 0;
 			char c; 
-			do {
-				c = client.read();
-				if(c != -1) {
-					message[m] = c;
-					if(m < MESSAGE_SIZE - 1) {
-						m++;
-					} else {
-						client.println("Array demasiado largo");
-						message = {0};
-						m = 0;
+			do
+			{
+				c = cliente.read();
+				if(c != -1)
+				{
+					mensaje[long_mensaje] = c;
+					if(long_mensaje < MAX_LONG_MENSAJE - 1)
+					{
+						long_mensaje++;
+					} else
+					{
+						cliente.println("Array demasiado largo");
+						mensaje = {0};
+						long_mensaje = 0;
 						break;
 					}
 				}
 			} while(c != '\n');
-			
-			message_size = m;
-			Serial.print("Message size: ");
-			Serial.println(message_size);
+		
+			Serial.print("Longitud del mensaje: ");
+			Serial.println(long_mensaje);
 
 			char numero[16] = {0};
 			int j = 0;
-			
-			for (int i = 0; i < message_size; ++i)
+		
+			for (int i = 0; i < long_mensaje; ++i)
 			{
-				if(message[i] == ' ' 
-					|| message[i] == ',' 
-					|| message[i] == '\t' 
-					|| message[i] == '\r' 
-					|| message[i] == '\n')
+				if(mensaje[i] == ' ' 
+					|| mensaje[i] == ',' 
+					|| mensaje[i] == '\t' 
+					|| mensaje[i] == '\r' 
+					|| mensaje[i] == '\n')
 				{
 					if(cantidad_num == 0)
 					{
-						if(i>16){
+						if(i>16)
+						{
 							num_comando = NOP;
 							cantidad_num = 0;
 							break;
 						}
-						memcpy(comando, message, i);
+						memcpy(comando, mensaje, i);
 						num_comando = deco_comando();
-					} else {
-						if(sscanf(numero, "%d", &number_array[n]) < 1)
+					} else
+					{
+						if(sscanf(numero, "%d", &array_numeros[n]) < 1)
 						{
 							Serial.println("Error al convertir");
 							Serial.print("Num: ");
 							Serial.println(numero);
 							size = 0;
-							number_array = {NULL};
+							array_numeros = {NULL};
 							break;
 						} else
 						{
@@ -136,15 +143,18 @@ void loop()
 						}
 					}
 					cantidad_num++;
-				} else{
-					if(cantidad_num > 0){
-						numero[j] = message[i];
+				} else
+				{
+					if(cantidad_num > 0)
+					{
+						numero[j] = mensaje[i];
 						j++;
 					}
 				}
 			}
 
-			if(cantidad_num > 0){
+			if(cantidad_num > 0)
+			{
 				size = n;
 				Serial.print("Tamaño del array: ");
 				Serial.println(size);
@@ -152,13 +162,13 @@ void loop()
 
 			Serial.println(comando);
 		}
-		
-		client.flush();
+	
+		cliente.flush();
 
-		ejecuta_comando(&client, num_comando, size);
+		ejecuta_comando(&cliente, num_comando, size);
 		if(size)
 		{
-			print_array(resultado, size);
+			print_array(array_numeros, size);
 		}
 	}
 }
@@ -174,16 +184,6 @@ void print_array(int *array, int len)
 	}
 	server.print('\n');
 	Serial.println("");
-}
-
-int copia_a_resultado(int size)
-{
-	
-	for (int i = 0; i < size; ++i)
-	{
-		resultado[i] = number_array[i];
-	}
-	return 0;
 }
 
 comandos deco_comando(void)
@@ -235,191 +235,190 @@ comandos deco_comando(void)
 	}
 }
 
-void ejecuta_comando(Client *client, comandos comando, int size)
+void ejecuta_comando(Client *cliente, comandos comando, int size)
 {
 	uint16_t antes_micros, despues_micros, antes_millis, despues_millis;
-	copia_a_resultado(size);
 	switch(comando)
 	{
 		case BUBBLE0:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble0(resultado, size);
+			bubble0(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Bubble0 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Bubble0 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Bubble0 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Bubble0 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case BUBBLE1:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble1(resultado, size);
+			bubble1(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Bubble1 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Bubble1 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Bubble1 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Bubble1 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case BUBBLE2:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble2(resultado, size);
+			bubble2(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Bubble2 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Bubble2 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Bubble2 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Bubble2 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case BUBBLE3:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble3(resultado, size);
+			bubble3(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Bubble3 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Bubble3 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Bubble3 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Bubble3 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case QUICK0:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort0(resultado, 0, size - 1);
+			quicksort0(array_numeros, 0, size - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo QuickSort0 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Quicksort0 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo QuickSort0 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Quicksort0 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case QUICK1:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort1(resultado, 0, size - 1);
+			quicksort1(array_numeros, 0, size - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo QuickSort1 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Quicksort1 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo QuickSort1 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Quicksort1 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case QUICK2:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort2(resultado, 0, size - 1);
+			quicksort2(array_numeros, 0, size - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo QuickSort2 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Quicksort2 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo QuickSort2 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Quicksort2 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case QUICK3:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort3(resultado, 0, size - 1);
+			quicksort3(array_numeros, 0, size - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo QuickSort3 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Quicksort3 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo QuickSort3 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Quicksort3 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case SEL0:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection0(resultado, size);
+			selection0(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Selection0 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Selection0 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Selection0 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Selection0 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case SEL1:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection1(resultado, size);
+			selection1(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Selection1 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Selection1 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Selection1 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Selection1 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case SEL2:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection2(resultado, size);
+			selection2(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Selection2 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Selection2 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Selection2 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Selection2 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case SEL3:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection3(resultado, size);
+			selection3(array_numeros, size);
 			despues_micros = micros();
 			despues_millis = millis();
 
-			(*client).print("Tiempo Selection3 en microsegundos: ");
-			(*client).println(despues_micros - antes_micros);
-			(*client).print("Tiempo Selection3 en milisegundos: ");
-			(*client).println(despues_millis - antes_millis);
+			(*cliente).print("Tiempo Selection3 en microsegundos: ");
+			(*cliente).println(despues_micros - antes_micros);
+			(*cliente).print("Tiempo Selection3 en milisegundos: ");
+			(*cliente).println(despues_millis - antes_millis);
 			break;
 
 		case HELP:
-			(*client).println("Comandos disponibles:\n");
-			(*client).println("bubble0");
-			(*client).println("bubble1");
-			(*client).println("bubble2");
-			(*client).println("bubble3");
-			(*client).println("quick0");
-			(*client).println("quick1");
-			(*client).println("quick2");
-			(*client).println("quick3");
-			(*client).println("sel0");
-			(*client).println("sel1");
-			(*client).println("sel2");
-			(*client).println("sel3");
-			(*client).println("");
+			(*cliente).println("Comandos disponibles:\n");
+			(*cliente).println("bubble0");
+			(*cliente).println("bubble1");
+			(*cliente).println("bubble2");
+			(*cliente).println("bubble3");
+			(*cliente).println("quick0");
+			(*cliente).println("quick1");
+			(*cliente).println("quick2");
+			(*cliente).println("quick3");
+			(*cliente).println("sel0");
+			(*cliente).println("sel1");
+			(*cliente).println("sel2");
+			(*cliente).println("sel3");
+			(*cliente).println("");
 			break;
 
 		case EXIT:
-			(*client).stop();
+			(*cliente).stop();
 			break;
 
 		default:
-			(*client).println("Comando invalido");
+			(*cliente).println("Comando invalido");
 			Serial.println("Cliente desconectado");
 			break;
 
