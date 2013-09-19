@@ -127,20 +127,24 @@ void loop()
 						num_comando = deco_comando();
 					} else
 					{
-						if(sscanf(numero, "%d", &array_numeros[n]) < 1)
+						if (mensaje[i - 1] != '\r')
 						{
-							Serial.println("Error al convertir");
-							Serial.print("Num: ");
-							Serial.println(numero);
-							size = 0;
-							array_numeros = {NULL};
-							break;
-						} else
-						{
-							n++;
-							j = 0;
-							numero = {0};
+							if(sscanf(numero, "%d", &array_numeros[n]) < 1)
+							{
+								Serial.println("Error al convertir");
+								Serial.print("Num: ");
+								Serial.println(numero);
+								//size = 0;
+								//array_numeros = {NULL};
+								//break;
+							} else
+							{
+								n++;
+								j = 0;
+								numero = {0};
+							}
 						}
+						
 					}
 					cantidad_num++;
 				} else
@@ -415,11 +419,11 @@ void ejecuta_comando(Client *cliente, comandos comando, int size)
 
 		case EXIT:
 			(*cliente).stop();
+			Serial.println("Cliente desconectado");
 			break;
 
 		default:
 			(*cliente).println("Comando invalido");
-			Serial.println("Cliente desconectado");
 			break;
 
 	}
