@@ -8,20 +8,20 @@ uint8_t mensaje[MAX_LONG_MENSAJE];
 char comando[16];
 int array_numeros[MAX_LONG_ARRAY];
 
-// Enter a MAC address and IP address for your controller below. 
+// Enter a MAC address and IP address for your controller below.
 // A zero MAC address means that the chipKIT MAC is to be used
-byte mac[] = {	
+byte mac[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 //			 !!MODIFY THIS!!
 // The IP address will be dependent on your local network:
-byte ip[] = { 
+byte ip[] = {
 	10,0,0,8 };
 
 //Estos campos estan comentados ya que no necesitamos acceso
 //fuera de la red local. En caso de necesitarlo (para acceder
-//desde una red externa) se pueden descomentar y cambiar la 
-//linea Ethernet.begin dentro de la funcion setup por la que 
+//desde una red externa) se pueden descomentar y cambiar la
+//linea Ethernet.begin dentro de la funcion setup por la que
 //esta comentada.
 //byte router[] = { 10,0,0,1 };
 //byte subred[] = { 255, 255, 255, 0 };
@@ -45,13 +45,14 @@ typedef enum comandos {
 	SEL1,
 	SEL2,
 	SEL3,
+    COMP,
 } comandos;
 
 void print_array(int *array, int len);
 comandos deco_comando(void);
 void ejecuta_comando(Client *cliente, comandos, int);
 
-void setup() 
+void setup()
 {
 	// Inicializamos el dispositivo de red.
 	//	Ethernet.begin(mac, ip, router, subred);
@@ -64,7 +65,7 @@ void setup()
 
 
 
-void loop() 
+void loop()
 {
 	Client cliente = server.available();
 	uint long_mensaje = 0;
@@ -81,7 +82,7 @@ void loop()
 
 		if(cliente.available())
 		{
-			char c; 
+			char c;
 			do
 			{
 				c = cliente.read();
@@ -100,19 +101,19 @@ void loop()
 					}
 				}
 			} while(c != '\n');
-		
+
 			Serial.print("Longitud del mensaje: ");
 			Serial.println(long_mensaje);
 
 			char numero[16] = {0};
 			int j = 0;
-		
+
 			for (int i = 0; i < long_mensaje; ++i)
 			{
-				if(mensaje[i] == ' ' 
-					|| mensaje[i] == ',' 
-					|| mensaje[i] == '\t' 
-					|| mensaje[i] == '\r' 
+				if(mensaje[i] == ' '
+					|| mensaje[i] == ','
+					|| mensaje[i] == '\t'
+					|| mensaje[i] == '\r'
 					|| mensaje[i] == '\n')
 				{
 					if(cantidad_num == 0)
@@ -144,7 +145,7 @@ void loop()
 								numero = {0};
 							}
 						}
-						
+
 					}
 					cantidad_num++;
 				} else
@@ -166,7 +167,7 @@ void loop()
 
 			Serial.println(comando);
 		}
-	
+
 		cliente.flush();
 
 		ejecuta_comando(&cliente, num_comando, longitud);
@@ -231,7 +232,10 @@ comandos deco_comando(void)
 	} else if (!strcmp(comando, "help"))
 	{
 		return HELP;
-	} else if (!strcmp(comando, "exit"))
+	} else if (!strcmp(comando, "comparar"))
+    {
+        return COMP;
+    } else if (!strcmp(comando, "exit"))
 	{
 		return EXIT;
 	} else {
@@ -399,6 +403,14 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 			(*cliente).print("Tiempo Selection3 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
 			break;
+
+        case COMP:
+            /*
+             * Debe generar un array grande con numeros aleatorios
+             * y ejecutar todas las funciones anteriores, mostrando
+             * los resultados al cliente
+             */
+            break;
 
 		case HELP:
 			(*cliente).println("Comandos disponibles:\n");
