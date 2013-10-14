@@ -82,6 +82,7 @@ void loop()
 
 		if(cliente.available())
 		{
+			//Recepcion del mensaje
 			char c;
 			do
 			{
