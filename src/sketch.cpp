@@ -50,7 +50,7 @@ typedef enum comandos {
 
 void print_array(int *array, int len);
 comandos deco_comando(void);
-void ejecuta_comando(Client *cliente, comandos, int);
+void ejecuta_comando(Client *cliente, comandos, int *, int);
 
 void setup()
 {
@@ -171,7 +171,7 @@ void loop()
 
 		cliente.flush();
 
-		ejecuta_comando(&cliente, num_comando, longitud);
+		ejecuta_comando(&cliente, num_comando, array_numeros,longitud);
 		if(longitud)
 		{
 			print_array(array_numeros, longitud);
@@ -244,7 +244,7 @@ comandos deco_comando(void)
 	}
 }
 
-void ejecuta_comando(Client *cliente, comandos comando, int longitud)
+void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud)
 {
 	uint16_t antes_micros, despues_micros, antes_millis, despues_millis;
 	switch(comando)
@@ -252,7 +252,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case BUBBLE0:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble0(array_numeros, longitud);
+			bubble0(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -265,7 +265,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case BUBBLE1:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble1(array_numeros, longitud);
+			bubble1(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -278,7 +278,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case BUBBLE2:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble2(array_numeros, longitud);
+			bubble2(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -291,7 +291,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case BUBBLE3:
 			antes_micros = micros();
 			antes_millis = millis();
-			bubble3(array_numeros, longitud);
+			bubble3(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -304,7 +304,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case QUICK0:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort0(array_numeros, 0, longitud - 1);
+			quicksort0(array, 0, longitud - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -317,7 +317,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case QUICK1:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort1(array_numeros, 0, longitud - 1);
+			quicksort1(array, 0, longitud - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -330,7 +330,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case QUICK2:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort2(array_numeros, 0, longitud - 1);
+			quicksort2(array, 0, longitud - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -343,7 +343,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case QUICK3:
 			antes_micros = micros();
 			antes_millis = millis();
-			quicksort3(array_numeros, 0, longitud - 1);
+			quicksort3(array, 0, longitud - 1);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -356,7 +356,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case SEL0:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection0(array_numeros, longitud);
+			selection0(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -369,7 +369,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case SEL1:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection1(array_numeros, longitud);
+			selection1(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -382,7 +382,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case SEL2:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection2(array_numeros, longitud);
+			selection2(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -395,7 +395,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int longitud)
 		case SEL3:
 			antes_micros = micros();
 			antes_millis = millis();
-			selection3(array_numeros, longitud);
+			selection3(array, longitud);
 			despues_micros = micros();
 			despues_millis = millis();
 
