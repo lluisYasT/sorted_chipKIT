@@ -51,6 +51,7 @@ typedef enum comandos {
 void print_array(int *array, int len);
 comandos deco_comando(void);
 void ejecuta_comando(Client *cliente, comandos, int *, int);
+void array_aleatorio(void);
 
 void setup()
 {
@@ -234,9 +235,9 @@ comandos deco_comando(void)
 	{
 		return HELP;
 	} else if (!strcmp(comando, "comparar"))
-    {
-        return COMP;
-    } else if (!strcmp(comando, "exit"))
+  {
+      return COMP;
+  } else if (!strcmp(comando, "exit"))
 	{
 		return EXIT;
 	} else {
@@ -411,6 +412,33 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
              * y ejecutar todas las funciones anteriores, mostrando
              * los resultados al cliente
              */
+						array_aleatorio();
+						print_array(array_numeros, MAX_LONG_ARRAY);
+						int array_copia[MAX_LONG_ARRAY];
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, BUBBLE0, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, BUBBLE1, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, BUBBLE2, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, BUBBLE3, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, QUICK0, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, QUICK1, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, QUICK2, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, QUICK3, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, SEL0, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, SEL1, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, SEL2, array_copia, MAX_LONG_ARRAY);
+						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
+						ejecuta_comando(cliente, SEL3, array_copia, MAX_LONG_ARRAY);
             break;
 
 		case HELP:
@@ -439,5 +467,16 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println("Comando invalido");
 			break;
 
+	}
+}
+
+/*
+ * Rellena array_numeros con numeros aleatorios
+ */
+void array_aleatorio(void)
+{
+	for (int i = 0; i < MAX_LONG_ARRAY; i++)
+	{
+		array_numeros[i] = (int)random(1L<<(sizeof(int)*8 - 1));
 	}
 }
