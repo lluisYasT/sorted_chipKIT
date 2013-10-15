@@ -7,6 +7,7 @@
 uint8_t mensaje[MAX_LONG_MENSAJE];
 char comando[16];
 int array_numeros[MAX_LONG_ARRAY];
+bool	primer_mensaje = true;
 
 // Enter a MAC address and IP address for your controller below.
 // A zero MAC address means that the chipKIT MAC is to be used
@@ -77,6 +78,11 @@ void loop()
 
 	if (cliente)
 	{
+		if(primer_mensaje)
+		{
+			cliente.flush();
+			primer_mensaje = false;
+		}
 		mensaje = {0};
 		comando = {0};
 		array_numeros = {NULL};
@@ -413,7 +419,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
              * los resultados al cliente
              */
 						array_aleatorio();
-						print_array(array_numeros, MAX_LONG_ARRAY);
+						//print_array(array_numeros, MAX_LONG_ARRAY);
 						int array_copia[MAX_LONG_ARRAY];
 						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
 						ejecuta_comando(cliente, BUBBLE0, array_copia, MAX_LONG_ARRAY);
@@ -439,6 +445,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 						ejecuta_comando(cliente, SEL2, array_copia, MAX_LONG_ARRAY);
 						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
 						ejecuta_comando(cliente, SEL3, array_copia, MAX_LONG_ARRAY);
+						(*cliente).println("Completado.");
             break;
 
 		case HELP:
@@ -455,12 +462,14 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println("sel1");
 			(*cliente).println("sel2");
 			(*cliente).println("sel3");
+			(*cliente).println("comparar");
 			(*cliente).println("");
 			break;
 
 		case EXIT:
 			(*cliente).stop();
 			Serial.println("Cliente desconectado");
+			primer_mensaje = true;
 			break;
 
 		default:
