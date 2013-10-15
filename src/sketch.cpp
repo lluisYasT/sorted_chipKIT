@@ -1,4 +1,5 @@
 #include <chipKITEthernet.h>
+#include <IOShieldOled.h>
 #include "funciones.h"
 
 #define MAX_LONG_MENSAJE 	8192
@@ -61,6 +62,9 @@ void setup()
 	server.begin();
 	// Abrimos el puerto serie
 	Serial.begin(9600);
+
+	//Inicializamos la pantalla Oled
+	IOShieldOled.begin();
 }
 
 
@@ -73,6 +77,11 @@ void loop()
 	int n = 0;
 	int longitud = 0;
 	comandos num_comando = NOP;
+
+	//Mensaje de prueba en la pantalla Oled
+	IOShieldOled.clearBuffer();
+	IOShieldOled.setCursor(0, 0);
+	IOShieldOled.putString("Sorted ChipKIT");
 
 	if (cliente)
 	{
