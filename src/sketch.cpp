@@ -46,7 +46,7 @@ typedef enum comandos {
 	SEL1,
 	SEL2,
 	SEL3,
-    COMP,
+	COMP,
 } comandos;
 
 void print_array(int *array, int len);
@@ -449,6 +449,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
             break;
 
 		case HELP:
+			(*cliente).println("");
 			(*cliente).println("Comandos disponibles:\n");
 			(*cliente).println("bubble0");
 			(*cliente).println("bubble1");
@@ -463,6 +464,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println("sel2");
 			(*cliente).println("sel3");
 			(*cliente).println("comparar");
+			(*cliente).println("exit");
 			(*cliente).println("");
 			break;
 
