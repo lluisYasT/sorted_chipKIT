@@ -63,6 +63,10 @@ void setup()
 	server.begin();
 	// Abrimos el puerto serie
 	Serial.begin(9600);
+
+	//Configuramos el pin 13 como salida digital
+	TRISAbits.TRISA3 = 0;
+	LATAbits.LATA3 = 0;
 }
 
 
@@ -259,7 +263,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case BUBBLE0:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			bubble0(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -272,7 +278,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case BUBBLE1:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			bubble1(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -285,7 +293,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case BUBBLE2:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			bubble2(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -298,7 +308,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case BUBBLE3:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			bubble3(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -311,7 +323,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case QUICK0:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			quicksort0(array, 0, longitud - 1);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -324,7 +338,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case QUICK1:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			quicksort1(array, 0, longitud - 1);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -337,7 +353,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case QUICK2:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			quicksort2(array, 0, longitud - 1);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -350,7 +368,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case QUICK3:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			quicksort3(array, 0, longitud - 1);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -363,7 +383,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case SEL0:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			selection0(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -376,7 +398,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case SEL1:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			selection1(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -389,7 +413,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case SEL2:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			selection2(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -402,7 +428,9 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 		case SEL3:
 			antes_micros = micros();
 			antes_millis = millis();
+			LATAbits.LATA3 = 1;
 			selection3(array, longitud);
+			LATAbits.LATA3 = 0;
 			despues_micros = micros();
 			despues_millis = millis();
 
@@ -421,6 +449,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 						array_aleatorio();
 						//print_array(array_numeros, MAX_LONG_ARRAY);
 						int array_copia[MAX_LONG_ARRAY];
+						LATAbits.LATA3 = 1;
 						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
 						ejecuta_comando(cliente, BUBBLE0, array_copia, MAX_LONG_ARRAY);
 						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
@@ -446,6 +475,7 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 						memcpy(array_copia,array_numeros, MAX_LONG_ARRAY * sizeof(int));
 						ejecuta_comando(cliente, SEL3, array_copia, MAX_LONG_ARRAY);
 						(*cliente).println("Completado.");
+						LATAbits.LATA3 = 0;
             break;
 
 		case HELP:
