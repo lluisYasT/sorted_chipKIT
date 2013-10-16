@@ -1,4 +1,5 @@
 #include <chipKITEthernet.h>
+#include <IOShieldOled.h>
 #include "funciones.h"
 
 #define MAX_LONG_MENSAJE 	8192
@@ -67,6 +68,11 @@ void setup()
 	//Configuramos el pin 13 como salida digital
 	TRISAbits.TRISA3 = 0;
 	LATAbits.LATA3 = 0;
+
+	//Inicializamos la pantalla Oled
+	IOShieldOled.begin();
+	IOShieldOled.setCursor(0, 0);
+	IOShieldOled.putString("Sorted ChipKIT");
 }
 
 
@@ -79,6 +85,9 @@ void loop()
 	int n = 0;
 	int longitud = 0;
 	comandos num_comando = NOP;
+
+	//Mensaje de prueba en la pantalla Oled
+	//IOShieldOled.clearBuffer();
 
 	if (cliente)
 	{
@@ -258,6 +267,11 @@ comandos deco_comando(void)
 void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud)
 {
 	uint16_t antes_micros, despues_micros, antes_millis, despues_millis;
+	char tiempos[16];
+
+	IOShieldOled.clear();
+	IOShieldOled.setCursor(0,0);
+
 	switch(comando)
 	{
 		case BUBBLE0:
@@ -273,6 +287,11 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Bubble0 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos Bubble0");
+			IOShieldOled.setCursor(0,1);
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case BUBBLE1:
@@ -288,6 +307,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Bubble1 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos Bubble1");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case BUBBLE2:
@@ -303,6 +328,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Bubble2 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos Bubble2");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case BUBBLE3:
@@ -318,6 +349,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Bubble3 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos Bubble3");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case QUICK0:
@@ -333,6 +370,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Quicksort0 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos quick0");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case QUICK1:
@@ -348,6 +391,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Quicksort1 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos quick1");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case QUICK2:
@@ -363,6 +412,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Quicksort2 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos quick2");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case QUICK3:
@@ -378,6 +433,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Quicksort3 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos quick3");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case SEL0:
@@ -393,6 +454,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Selection0 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos sel0");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case SEL1:
@@ -408,6 +475,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Selection1 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos sel1");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case SEL2:
@@ -423,6 +496,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Selection2 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos sel2");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
 		case SEL3:
@@ -438,6 +517,12 @@ void ejecuta_comando(Client *cliente, comandos comando, int *array, int longitud
 			(*cliente).println(despues_micros - antes_micros);
 			(*cliente).print("Tiempo Selection3 en milisegundos: ");
 			(*cliente).println(despues_millis - antes_millis);
+
+			IOShieldOled.putString("Tiempos sel3");
+			IOShieldOled.setCursor(0,1);
+			
+			sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+			IOShieldOled.putString(tiempos);
 			break;
 
         case COMP:
