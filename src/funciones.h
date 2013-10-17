@@ -4,6 +4,10 @@ void bubble2(int *, int) __attribute__((optimize(2)));
 void bubble3(int *, int) __attribute__((optimize(3)));
 
 //Algoritmo Quicksort de la wikipedia
+void quick0(int *, int);
+void quick1(int *, int);
+void quick2(int *, int);
+void quick3(int *, int);
 int colocar0(int *, int, int) __attribute__((optimize(0)));
 void quicksort0(int *, int, int)__attribute__((optimize(0)));
 int colocar1(int *, int, int) __attribute__((optimize(1)));

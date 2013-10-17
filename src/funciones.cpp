@@ -71,6 +71,26 @@ void bubble3(int * array, int len)
 	}
 }
 
+void quick0(int * array, int len)
+{
+	quicksort0(array, 0, len-1);
+}
+
+void quick1(int * array, int len)
+{
+	quicksort1(array, 0, len-1);
+}
+
+void quick2(int * array, int len)
+{
+	quicksort2(array, 0, len-1);
+}
+
+void quick3(int * array, int len)
+{
+	quicksort3(array, 0, len-1);
+}
+
 void quicksort0(int *v, int b, int t)
 {
 	if(b < t)
