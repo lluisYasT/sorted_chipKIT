@@ -10,6 +10,20 @@ char comando[16];
 int array_numeros[MAX_LONG_ARRAY];
 bool	primer_mensaje = true;
 
+void (*fcomando[12])(int *, int) =
+					{	bubble0,
+						bubble1,
+						bubble2,
+						bubble3,
+						quick0,
+						quick1,
+						quick2,
+						quick3,
+						selection0,
+						selection1,
+						selection2,
+						selection3 };
+
 
 // Enter a MAC address and IP address for your controller below.
 // A zero MAC address means that the chipKIT MAC is to be used
@@ -31,10 +45,13 @@ byte ip[] = {
 
 // Iniciamos el servidor en el puerto 23 (Telnet)
 Server server(23);
+// Declaramos al cliente
+Client cliente; 
 
 void print_array(int *array, int len);
-void ejecuta_comando(Client *cliente, char *, int *, int);
+void selecciona_comando(char *, int);
 void array_aleatorio(void);
+void ejecuta_comando(int indice_comando, int * array, int lon);
 
 void setup()
 {
@@ -56,7 +73,7 @@ void setup()
 
 void loop()
 {
-	Client cliente = server.available();
+	cliente = server.available();
 	uint long_mensaje = 0;
 	int cantidad_num = 0;
 	int n = 0;
@@ -67,7 +84,6 @@ void loop()
 		if(primer_mensaje)
 		{
 			cliente.flush();
-			primer_mensaje = false;
 		}
 		mensaje = {0};
 		comando = {0};
@@ -161,12 +177,13 @@ void loop()
 
 		cliente.flush();
 
-		ejecuta_comando(&cliente, comando, array_numeros,longitud);
+		selecciona_comando(comando, longitud);
 		if(longitud)
 		{
 			print_array(array_numeros, longitud);
 		}
 	}
+	primer_mensaje = false;
 }
 
 void print_array(int *array, int len)
@@ -182,11 +199,81 @@ void print_array(int *array, int len)
 	Serial.println("");
 }
 
-void ejecuta_comando(Client *cliente, char *comando, int *array, int longitud)
+void selecciona_comando(char *comando, int longitud)
+{
+	if (!strcmp(comando, "bubble0"))
+	{
+		ejecuta_comando(0, array_numeros, longitud);
+	} else if (!strcmp(comando, "bubble1"))
+	{
+		ejecuta_comando(1, array_numeros, longitud);
+	} else if (!strcmp(comando, "bubble2"))
+	{
+		ejecuta_comando(2, array_numeros, longitud);
+	} else if (!strcmp(comando, "bubble3"))
+	{
+		ejecuta_comando(3, array_numeros, longitud);
+	} else if (!strcmp(comando, "quick0"))
+	{
+		ejecuta_comando(4, array_numeros, longitud);
+	} else if (!strcmp(comando, "quick1"))
+	{
+		ejecuta_comando(5, array_numeros, longitud);
+	} else if (!strcmp(comando, "quick2"))
+	{
+		ejecuta_comando(6, array_numeros, longitud);
+	} else if (!strcmp(comando, "quick3"))
+	{
+		ejecuta_comando(7, array_numeros, longitud);
+	} else if (!strcmp(comando, "sel0"))
+	{
+		ejecuta_comando(8, array_numeros, longitud);
+	} else if (!strcmp(comando, "sel1"))
+	{
+		ejecuta_comando(9, array_numeros, longitud);
+	} else if (!strcmp(comando, "sel2"))
+	{
+		ejecuta_comando(10, array_numeros, longitud);
+	} else if (!strcmp(comando, "sel3"))
+	{
+		ejecuta_comando(11, array_numeros, longitud);
+	} else if (!strcmp(comando, "help"))
+	{
+		cliente.println("");
+		cliente.println("Comandos disponibles:\n");
+		cliente.println("bubble0");
+		cliente.println("bubble1");
+		cliente.println("bubble2");
+		cliente.println("bubble3");
+		cliente.println("quick0");
+		cliente.println("quick1");
+		cliente.println("quick2");
+		cliente.println("quick3");
+		cliente.println("sel0");
+		cliente.println("sel1");
+		cliente.println("sel2");
+		cliente.println("sel3");
+		cliente.println("comparar");
+		cliente.println("exit");
+		cliente.println("");
+	} else if (!strcmp(comando, "comparar"))
+  {
+     // return COMP;
+  } else if (!strcmp(comando, "exit"))
+	{
+		cliente.stop();
+		Serial.println("Cliente desconectado");
+		primer_mensaje = true;
+	} else {
+		if(!primer_mensaje) cliente.println("Comando invalido");
+	}
+
+}
+
+void ejecuta_comando(int indice_comando, int * array, int lon)
 {
 	uint16_t antes_micros, despues_micros, antes_millis, despues_millis;
 	char tiempos[16];
-	void (*fcomando)(int *, int );
 	bool comando_valido = true;
 
 	IOShieldOled.clear();
@@ -195,99 +282,24 @@ void ejecuta_comando(Client *cliente, char *comando, int *array, int longitud)
 	//Configuramos el pin 70 (LD1 en la placa IOShield) como salida digital
 	TRISAbits.TRISA0 = 0;
 	LATAbits.LATA0 = 0;
-	if (!strcmp(comando, "bubble0"))
-	{
-		fcomando = bubble0;
-	} else if (!strcmp(comando, "bubble1"))
-	{
-		fcomando = bubble1;
-	} else if (!strcmp(comando, "bubble2"))
-	{
-		fcomando = bubble2;
-	} else if (!strcmp(comando, "bubble3"))
-	{
-		fcomando = bubble3;
-	} else if (!strcmp(comando, "quick0"))
-	{
-		fcomando = quick0;
-	} else if (!strcmp(comando, "quick1"))
-	{
-		fcomando = quick1;
-	} else if (!strcmp(comando, "quick2"))
-	{
-		fcomando = quick2;
-	} else if (!strcmp(comando, "quick3"))
-	{
-		fcomando = quick3;
-	} else if (!strcmp(comando, "sel0"))
-	{
-		fcomando = selection0;
-	} else if (!strcmp(comando, "sel1"))
-	{
-		fcomando = selection1;
-	} else if (!strcmp(comando, "sel2"))
-	{
-		fcomando = selection2;
-	} else if (!strcmp(comando, "sel3"))
-	{
-		fcomando = selection3;
-	} else if (!strcmp(comando, "help"))
-	{
-		(*cliente).println("");
-		(*cliente).println("Comandos disponibles:\n");
-		(*cliente).println("bubble0");
-		(*cliente).println("bubble1");
-		(*cliente).println("bubble2");
-		(*cliente).println("bubble3");
-		(*cliente).println("quick0");
-		(*cliente).println("quick1");
-		(*cliente).println("quick2");
-		(*cliente).println("quick3");
-		(*cliente).println("sel0");
-		(*cliente).println("sel1");
-		(*cliente).println("sel2");
-		(*cliente).println("sel3");
-		(*cliente).println("comparar");
-		(*cliente).println("exit");
-		(*cliente).println("");
-		comando_valido = false;
-	} else if (!strcmp(comando, "comparar"))
-  {
-     // return COMP;
-     comando_valido = false;
-  } else if (!strcmp(comando, "exit"))
-	{
-		(*cliente).stop();
-		Serial.println("Cliente desconectado");
-		primer_mensaje = true;
-		comando_valido = false;
-	} else {
-		//return NOP;
-		(*cliente).println("Comando invalido");
-		comando_valido = false;
-	}
 
-	if(comando_valido)
-	{
-		antes_micros = micros();
-		antes_millis = millis();
-		LATAbits.LATA0 = 1;
-		(*fcomando)(array, longitud);
-		LATAbits.LATA0 = 0;
-		despues_micros = micros();
-		despues_millis = millis();
+	antes_micros = micros();
+	antes_millis = millis();
+	LATAbits.LATA0 = 1;
+	(*fcomando[indice_comando])(array, lon);
+	LATAbits.LATA0 = 0;
+	despues_micros = micros();
+	despues_millis = millis();
 
-		(*cliente).print("Tiempo en microsegundos: ");
-		(*cliente).println(despues_micros - antes_micros);
-		(*cliente).print("Tiempo en milisegundos: ");
-		(*cliente).println(despues_millis - antes_millis);
+	cliente.print("Tiempo en microsegundos: ");
+	cliente.println(despues_micros - antes_micros);
+	cliente.print("Tiempo en milisegundos: ");
+	cliente.println(despues_millis - antes_millis);
 
-		IOShieldOled.putString("Tiempos");
-		IOShieldOled.setCursor(0,1);
-		sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
-		IOShieldOled.putString(tiempos);
-	}
-
+	IOShieldOled.putString("Tiempos");
+	IOShieldOled.setCursor(0,1);
+	sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+	IOShieldOled.putString(tiempos);
 }
 
 /*
