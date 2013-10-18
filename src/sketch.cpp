@@ -182,8 +182,8 @@ void loop()
 		{
 			print_array(array_numeros, longitud);
 		}
+		primer_mensaje = false;
 	}
-	primer_mensaje = false;
 }
 
 void print_array(int *array, int len)
@@ -264,6 +264,11 @@ void selecciona_comando(char *comando, int longitud)
 		cliente.stop();
 		Serial.println("Cliente desconectado");
 		primer_mensaje = true;
+
+		IOShieldOled.clear();
+		IOShieldOled.setCursor(0, 0);
+		IOShieldOled.putString("Sorted ChipKIT");
+
 	} else {
 		if(!primer_mensaje) cliente.println("Comando invalido");
 	}
