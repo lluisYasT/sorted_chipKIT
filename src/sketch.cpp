@@ -4,13 +4,14 @@
 
 #define MAX_LONG_MENSAJE 	8192
 #define MAX_LONG_ARRAY		MAX_LONG_MENSAJE / 2
+#define N_ORDENAR					12 //Numero de funciones para ordenar
 
 uint8_t mensaje[MAX_LONG_MENSAJE];
 char comando[16];
 int array_numeros[MAX_LONG_ARRAY];
 bool	primer_mensaje = true;
 
-void (*fcomando[12])(int *, int) =
+void (*fcomando[N_ORDENAR])(int *, int) =
 					{	bubble0,
 						bubble1,
 						bubble2,
@@ -23,6 +24,20 @@ void (*fcomando[12])(int *, int) =
 						selection1,
 						selection2,
 						selection3 };
+const char nombres_funciones[N_ORDENAR][12] =
+					{	"Bubble0",
+						"Bubble1",
+						"Bubble2",
+						"Bubble3",
+						"Quick0",
+						"Quick1",
+						"Quick2",
+						"Quick3",
+						"Selection0",
+						"Selection1",
+						"Selection2",
+						"Selection3"
+					};
 
 
 // Enter a MAC address and IP address for your controller below.
@@ -52,6 +67,7 @@ void print_array(int *array, int len);
 void selecciona_comando(char *, int);
 void array_aleatorio(void);
 void ejecuta_comando(int indice_comando, int * array, int lon);
+void compara(int * array, int lon);
 
 void setup()
 {
@@ -315,5 +331,15 @@ void array_aleatorio(void)
 	for (int i = 0; i < MAX_LONG_ARRAY; i++)
 	{
 		array_numeros[i] = (int)random(1L<<(sizeof(int)*8 - 1));
+	}
+}
+
+void compara(int * array, int lon)
+{
+	int array_aux[MAX_LONG_ARRAY];
+	for (int i = 0; i < N_ORDENAR; i++) {
+		memcpy(array_aux,array,lon);
+		/* code */
+		ejecuta_comando(i,array_aux,lon);
 	}
 }
