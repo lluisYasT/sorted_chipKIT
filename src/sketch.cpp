@@ -10,13 +10,11 @@ char comando[16];
 int array_numeros[MAX_LONG_ARRAY];
 bool	primer_mensaje = true;
 
-// Enter a MAC address and IP address for your controller below.
-// A zero MAC address means that the chipKIT MAC is to be used
+// Direccion MAC. Todo 0 indica que se use la del propio ChipKIT
 byte mac[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-//			 !!MODIFY THIS!!
-// The IP address will be dependent on your local network:
+// Direccion IP
 byte ip[] = {
 	10,0,0,8 };
 
@@ -54,8 +52,6 @@ void setup()
 	IOShieldOled.setCursor(0, 0);
 	IOShieldOled.putString("Sorted ChipKIT");
 }
-
-
 
 void loop()
 {
@@ -116,12 +112,10 @@ void loop()
 					{
 						if(i>16)
 						{
-							//num_comando = NOP;
 							cantidad_num = 0;
 							break;
 						}
 						memcpy(comando, mensaje, i);
-						//num_comando = deco_comando();
 					} else
 					{
 						if (mensaje[i - 1] != '\r')
@@ -172,6 +166,9 @@ void loop()
 	}
 }
 
+/*
+ * Imprime un array por el puerto serie y al cliente conectado por red
+ */
 void print_array(int *array, int len)
 {
 	for(int i = 0;i < len; ++i)
@@ -185,6 +182,10 @@ void print_array(int *array, int len)
 	Serial.println("");
 }
 
+/*
+ * En funcion del comando llama a la funcion o realiza la operacion
+ * correspondiente a dicho comando.
+ */
 void selecciona_comando(char *comando, int longitud)
 {
 	if (!strcmp(comando, "bubble0"))
@@ -283,6 +284,7 @@ void ejecuta_comando(int indice_comando, int * array, int lon)
 	despues_micros = micros();
 	despues_millis = millis();
 
+	// Envia los resultados al cliente
 	cliente.println(funcion_ordenar[indice_comando].nombre);
 	cliente.print("Tiempo en microsegundos: ");
 	cliente.println(despues_micros - antes_micros);
@@ -290,6 +292,7 @@ void ejecuta_comando(int indice_comando, int * array, int lon)
 	cliente.println(despues_millis - antes_millis);
 	cliente.print("\n");
 
+	// Muestra los resultados en la pantalla del ChipKIT I/O Shield
 	IOShieldOled.putString(funcion_ordenar[indice_comando].nombre);
 	IOShieldOled.putString(": ");
 	IOShieldOled.setCursor(0,1);
@@ -308,7 +311,11 @@ void array_aleatorio(void)
 	}
 }
 
-void compara()
+/*
+ * Genera un array aleatorio y llama a a todas las funciones de ordenacion
+ * una por una y muestra los resultados.
+ */
+void compara(void)
 {
 	int array_aux[MAX_LONG_ARRAY];
 	array_aleatorio();
