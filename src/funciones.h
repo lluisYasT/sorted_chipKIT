@@ -25,6 +25,8 @@ void selection1(int *array, int len) __attribute__((optimize(1)));
 void selection2(int *array, int len) __attribute__((optimize(2)));
 void selection3(int *array, int len) __attribute__((optimize(3)));
 
+// Declaramos la estructura algoritmo que contiene el nombre de los distintos
+// algoritmos y su dirección.
 struct  algoritmo {
 	char *nombre;
 	void (*funcion)(int *, int);
@@ -45,29 +47,3 @@ struct algoritmo funcion_ordenar[N_ORDENAR] =
 		{"Selection2", &selection2},
 		{"Selection3", &selection3}
 	};
-
-// funcion_ordenar[0] = {"Bubble0", &bubble0};
-// funcion_ordenar[1].nombre = "Bubble1";
-// funcion_ordenar[1].funcion = &bubble1;
-// funcion_ordenar[2].nombre = "Bubble2";
-// funcion_ordenar[2].funcion = &bubble2;
-// funcion_ordenar[3].nombre = "Bubble3";
-// funcion_ordenar[3].funcion = &bubble3;
-// 
-// funcion_ordenar[4].nombre = "Quick0";
-// funcion_ordenar[4].funcion = &quick0;
-// funcion_ordenar[5].nombre = "Quick1";
-// funcion_ordenar[5].funcion = &quick1;
-// funcion_ordenar[6].nombre = "Quick2";
-// funcion_ordenar[6].funcion = &quick2;
-// funcion_ordenar[7].nombre = "Quick3";
-// funcion_ordenar[7].funcion = &quick3;
-// 
-// funcion_ordenar[8].nombre = "Selection0";
-// funcion_ordenar[8].funcion = &selection0;
-// funcion_ordenar[9].nombre = "Selection1";
-// funcion_ordenar[9].funcion = &selection1;
-// funcion_ordenar[10].nombre = "Selection2";
-// funcion_ordenar[10].funcion = &selection2;
-// funcion_ordenar[11].nombre = "Selection3";
-// funcion_ordenar[11].funcion = &selection3;
