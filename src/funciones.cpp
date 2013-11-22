@@ -1,4 +1,3 @@
-#include "funciones.h"
 void bubble0(int * array, int len)
 {
 	int c, d, swap;
@@ -71,24 +70,29 @@ void bubble3(int * array, int len)
 	}
 }
 
-void quick0(int * array, int len)
+int colocar0(int *v, int b, int t)
 {
-	quicksort0(array, 0, len-1);
-}
+	int i;
+	int pivote, valor_pivote;
+	int temp;
 
-void quick1(int * array, int len)
-{
-	quicksort1(array, 0, len-1);
-}
+	pivote = b;
+	valor_pivote = v[pivote];
+	for (i = b + 1; i <= t; i++)
+	{
+		if (v[i] < valor_pivote)
+		{
+			pivote++;
+			temp = v[i];
+			v[i] = v[pivote];
+			v[pivote] = temp;
+		}
+	}
+	temp = v[b];
+	v[b] = v[pivote];
+	v[pivote] = temp;
 
-void quick2(int * array, int len)
-{
-	quicksort2(array, 0, len-1);
-}
-
-void quick3(int * array, int len)
-{
-	quicksort3(array, 0, len-1);
+	return pivote;
 }
 
 void quicksort0(int *v, int b, int t)
@@ -101,7 +105,7 @@ void quicksort0(int *v, int b, int t)
 	}
 }
 
-int colocar0(int *v, int b, int t)
+int colocar1(int *v, int b, int t)
 {
 	int i;
 	int pivote, valor_pivote;
@@ -136,7 +140,7 @@ void quicksort1(int *v, int b, int t)
 	}
 }
 
-int colocar1(int *v, int b, int t)
+int colocar2(int *v, int b, int t)
 {
 	int i;
 	int pivote, valor_pivote;
@@ -171,7 +175,7 @@ void quicksort2(int *v, int b, int t)
 	}
 }
 
-int colocar2(int *v, int b, int t)
+int colocar3(int *v, int b, int t)
 {
 	int i;
 	int pivote, valor_pivote;
@@ -206,29 +210,24 @@ void quicksort3(int *v, int b, int t)
 	}
 }
 
-int colocar3(int *v, int b, int t)
+void quick0(int * array, int len)
 {
-	int i;
-	int pivote, valor_pivote;
-	int temp;
+	quicksort0(array, 0, len-1);
+}
 
-	pivote = b;
-	valor_pivote = v[pivote];
-	for (i = b + 1; i <= t; i++)
-	{
-		if (v[i] < valor_pivote)
-		{
-			pivote++;
-			temp = v[i];
-			v[i] = v[pivote];
-			v[pivote] = temp;
-		}
-	}
-	temp = v[b];
-	v[b] = v[pivote];
-	v[pivote] = temp;
+void quick1(int * array, int len)
+{
+	quicksort1(array, 0, len-1);
+}
 
-	return pivote;
+void quick2(int * array, int len)
+{
+	quicksort2(array, 0, len-1);
+}
+
+void quick3(int * array, int len)
+{
+	quicksort3(array, 0, len-1);
 }
 
 void selection0(int *array, int len)
