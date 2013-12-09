@@ -1,3 +1,5 @@
+#include "funciones.h"
+
 void bubble0(int * array, int len)
 {
 	int c, d, swap;

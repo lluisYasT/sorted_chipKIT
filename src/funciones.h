@@ -24,3 +24,4 @@ void selection0(int *array, int len) __attribute__((optimize(0)));
 void selection1(int *array, int len) __attribute__((optimize(1)));
 void selection2(int *array, int len) __attribute__((optimize(2)));
 void selection3(int *array, int len) __attribute__((optimize(3)));
+
