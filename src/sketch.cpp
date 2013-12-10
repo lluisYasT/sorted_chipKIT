@@ -1,3 +1,4 @@
+#include <plib.h>
 #include <chipKITEthernet.h>
 #include <IOShieldOled.h>
 #include "funciones.h"
@@ -288,7 +289,7 @@ void selecciona_comando(char *comando, int longitud)
 
 void ejecuta_comando(int indice_comando, int * array, int lon)
 {
-	uint16_t antes_micros, despues_micros, antes_millis, despues_millis;
+	uint32_t cuenta_prev, cuenta_post, ciclos;
 	char tiempos[16];
 	bool comando_valido = true;
 
@@ -299,27 +300,25 @@ void ejecuta_comando(int indice_comando, int * array, int lon)
 	TRISAbits.TRISA0 = 0;
 	LATAbits.LATA0 = 0;
 
-	antes_micros = micros();
-	antes_millis = millis();
-	LATAbits.LATA0 = 1;
+	LATAbits.LATA0 = 1; // Pin 13 a nivel alto
+	cuenta_prev = ReadCoreTimer();
 	funcion_ordenar[indice_comando].funcion(array, lon);
+	cuenta_post = ReadCoreTimer();
 	LATAbits.LATA0 = 0;
-	despues_micros = micros();
-	despues_millis = millis();
 
+	// Numero de ciclos 
+	ciclos = 2 * (cuenta_post - cuenta_prev);
 	// Envia los resultados al cliente
 	cliente.println(funcion_ordenar[indice_comando].nombre);
-	cliente.print("Tiempo en microsegundos: ");
-	cliente.println(despues_micros - antes_micros);
-	cliente.print("Tiempo en milisegundos: ");
-	cliente.println(despues_millis - antes_millis);
+	cliente.print("Numero de ciclos: ");
+	cliente.println(ciclos);
 	cliente.print("\n");
 
 	// Muestra los resultados en la pantalla del ChipKIT I/O Shield
 	IOShieldOled.putString(funcion_ordenar[indice_comando].nombre);
 	IOShieldOled.putString(": ");
 	IOShieldOled.setCursor(0,1);
-	sprintf(tiempos,"%d ms - %d us", despues_millis - antes_millis, despues_micros - antes_micros);
+	sprintf(tiempos,"%d ciclos", ciclos);
 	IOShieldOled.putString(tiempos);
 }
 
